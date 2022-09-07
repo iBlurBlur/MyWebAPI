@@ -25,3 +25,5 @@ C:\Users\2521112595\Downloads\MyWebAPI\obj\Debug\net6.0\refint\MyWebAPI.dll
 C:\Users\2521112595\Downloads\MyWebAPI\obj\Debug\net6.0\MyWebAPI.pdb
 C:\Users\2521112595\Downloads\MyWebAPI\obj\Debug\net6.0\MyWebAPI.genruntimeconfig.cache
 C:\Users\2521112595\Downloads\MyWebAPI\obj\Debug\net6.0\ref\MyWebAPI.dll
+C:\Users\2521112595\Downloads\MyWebAPI\bin\Debug\net6.0\Mapster.dll
+C:\Users\2521112595\Downloads\MyWebAPI\bin\Debug\net6.0\Mapster.Core.dll

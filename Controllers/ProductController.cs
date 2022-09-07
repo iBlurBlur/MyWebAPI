@@ -1,6 +1,8 @@
 ﻿
 
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace MyWebAPI.Controllers
 {
@@ -16,7 +18,7 @@ namespace MyWebAPI.Controllers
         }
 
         //localhost/product/1234 => validation
-        //localhost/product/{id}
+        //localhost/product
         [HttpGet("{id}")]
         public ActionResult<string> GetProductByID(int id)
         {
@@ -36,9 +38,13 @@ namespace MyWebAPI.Controllers
 
         //localhost/product
         [HttpPost]
-        public ActionResult<string> AddProduct ()
+        public ActionResult<string> AddProduct(ProductDTO productDTO) //{ json }
         {
-            return "post";
+            var newProduct = new Product();
+
+            productDTO.Adapt(newProduct);
+
+            return newProduct.Name;
         }
 
         //localhost/product
@@ -57,3 +63,34 @@ namespace MyWebAPI.Controllers
     }
 }
 
+public class ProductDTO
+{
+    public string Name { get; set; } = null!;
+
+    public string? Color { get; set; }
+
+    public decimal Price { get; set; }
+
+    public string? Size { get; set; }
+
+    public decimal? Weight { get; set; }
+
+    public string? ThumbnailPhotoFileName { get; set; }
+}
+
+public class Product
+{
+    public string Name { get; set; } = null!;
+
+    public string? Color { get; set; }
+
+    public decimal Price { get; set; }
+
+    public string? Size { get; set; }
+
+    public decimal? Weight { get; set; }
+
+    public string? ThumbnailPhotoFileName { get; set; }
+
+    public bool Expired { get; set; }
+}
