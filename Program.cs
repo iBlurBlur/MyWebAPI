@@ -1,7 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using MyWebAPI.Entities;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var AllowSpecificOrigins = "AllowSpecificOrigins";
 var AllowAllOrigins = "AllowAllOrigins";
+
+var config = builder.Configuration;
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -25,6 +31,15 @@ builder.Services.AddCors(options =>
         //.WithMethods("GET", "POST", "HEAD");
     });
 
+    options.AddPolicy("C", builder =>
+    {
+        builder.WithOrigins(
+            "https://bbl.com"
+            )
+        .AllowAnyHeader()
+        .WithMethods("GET");
+    });
+
     options.AddPolicy(AllowAllOrigins, builder =>
     {
         builder.AllowAnyOrigin()
@@ -32,6 +47,10 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod();
     });
 });
+
+builder.Services.AddDbContext<DekDueShopContext>(opt =>
+    opt.UseSqlServer(config.GetConnectionString("ConnectionSQLServer"))
+);
 
 var app = builder.Build();
 

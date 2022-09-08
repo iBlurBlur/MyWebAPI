@@ -1,7 +1,9 @@
 ﻿
 
 using Mapster;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using MyWebAPI.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -9,21 +11,22 @@ namespace MyWebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    //[EnableCors("C")]
     public class ProductController : ControllerBase
     {
+        private readonly DekDueShopContext dekDueShopContext;
+
+        public ProductController(DekDueShopContext dekDueShopContext)
+        {
+            this.dekDueShopContext = dekDueShopContext;
+        }
+
         //localhost/product
         [HttpGet]
-        public ActionResult<ProductDTO> GetProducts()
-        {
-            var product = new Product
-            {
-                Name = "A1",
-            };
+        //[DisableCors]
+        public ActionResult<IEnumerable<ProductDTO>> GetProducts() => dekDueShopContext.Products
+                                .ProjectToType<ProductDTO>().ToList();
 
-            ProductDTO productDTO = product.Adapt<ProductDTO>();
-
-            return productDTO;
-        }
 
         //localhost/product/1234 => validation
         //localhost/product
@@ -94,24 +97,4 @@ public class CreateProductDTO
     public IFormFile? ThumbNailPhoto { get; set; }
     [MaxLength(50)]
     public string? ThumbnailPhotoFileName { get; set; }
-}
-
-
-public class Product
-{
-    public string Name { get; set; } = null!;
-
-    public string? Color { get; set; }
-
-    public decimal Price { get; set; }
-
-    public string? Size { get; set; }
-
-    public decimal? Weight { get; set; }
-
-    public string? ThumbnailPhotoFileName { get; set; }
-
-    public byte[]? ThumbNailPhoto { get; set; }
-
-    public bool Expired { get; set; }
 }
