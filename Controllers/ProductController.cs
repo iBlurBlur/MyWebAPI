@@ -3,6 +3,7 @@
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MyWebAPI.Controllers
 {
@@ -12,9 +13,16 @@ namespace MyWebAPI.Controllers
     {
         //localhost/product
         [HttpGet]
-        public ActionResult<string> GetProducts()
+        public ActionResult<ProductDTO> GetProducts()
         {
-            return "tanakorn";
+            var product = new Product
+            {
+                Name = "A1",
+            };
+
+            ProductDTO productDTO = product.Adapt<ProductDTO>();
+
+            return productDTO;
         }
 
         //localhost/product/1234 => validation
@@ -38,7 +46,7 @@ namespace MyWebAPI.Controllers
 
         //localhost/product
         [HttpPost]
-        public ActionResult<string> AddProduct(ProductDTO productDTO) //{ json }
+        public ActionResult<string> AddProduct([FromForm] CreateProductDTO productDTO) //{ form data }
         {
             var newProduct = new Product();
 
@@ -49,7 +57,7 @@ namespace MyWebAPI.Controllers
 
         //localhost/product
         [HttpPut]
-        public ActionResult<string> EditProduct()
+        public ActionResult<string> EditProduct(ProductDTO productDTO)
         {
             return "put";
         }
@@ -63,20 +71,31 @@ namespace MyWebAPI.Controllers
     }
 }
 
-public class ProductDTO
+public class ProductDTO : CreateProductDTO
 {
+    public int ProductId { get; set; }
+}
+
+public class CreateProductDTO
+{
+    [Required, MaxLength(100)]
+    [MinLength(3, ErrorMessage = "Product name must be more than 3 characters.")]
     public string Name { get; set; } = null!;
-
+    [Required, MaxLength(25)]
+    public string ProductNumber { get; set; } = null!;
+    [MaxLength(15)]
     public string? Color { get; set; }
-
+    [Range(0, 100_000)]
     public decimal Price { get; set; }
-
+    [MaxLength(5)]
     public string? Size { get; set; }
-
+    [Range(1, int.MaxValue, ErrorMessage = "Value should be greater than or equal to 1")]
     public decimal? Weight { get; set; }
-
+    public FormFile? ThumbNailPhoto { get; set; }
+    [MaxLength(50)]
     public string? ThumbnailPhotoFileName { get; set; }
 }
+
 
 public class Product
 {
@@ -91,6 +110,8 @@ public class Product
     public decimal? Weight { get; set; }
 
     public string? ThumbnailPhotoFileName { get; set; }
+
+    public byte[]? ThumbNailPhoto { get; set; }
 
     public bool Expired { get; set; }
 }
