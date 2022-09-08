@@ -91,7 +91,7 @@ public class CreateProductDTO
     public string? Size { get; set; }
     [Range(1, int.MaxValue, ErrorMessage = "Value should be greater than or equal to 1")]
     public decimal? Weight { get; set; }
-    public FormFile? ThumbNailPhoto { get; set; }
+    public IFormFile? ThumbNailPhoto { get; set; }
     [MaxLength(50)]
     public string? ThumbnailPhotoFileName { get; set; }
 }
