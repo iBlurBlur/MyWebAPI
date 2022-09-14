@@ -26,24 +26,24 @@ namespace MyWebAPI.Controllers
         //localhost/product
         [HttpGet]
         //[DisableCors]
-        public IEnumerable<ProductResponseDTO> GetProducts()
+        public async Task<IEnumerable<ProductResponseDTO>>  GetProducts()
         {
             // select * From Product P
             // left join ProductCategory PC
             // on P.ProductCategoryID = PC.ProductCategory
-            return dekDueShopContext.Products
+            return await dekDueShopContext.Products
                         .Include(product => product.ProductCategory)
                         .ProjectToType<ProductResponseDTO>()
-                        .ToList();
+                        .ToListAsync();
         }
 
         //localhost/product/1234 => validation
         //localhost/product
         [HttpGet("{id}")]
-        public ActionResult<ProductResponseDTO> GetProductByID(int id)
+        public async Task<ActionResult<ProductResponseDTO>> GetProductByID(int id)
         {
             // select * from product where id = id
-            Product? result = dekDueShopContext.Products.Find(id);
+            Product? result = await dekDueShopContext.Products.FindAsync(id);
             if(result == null)
             {
                 return NotFound();
