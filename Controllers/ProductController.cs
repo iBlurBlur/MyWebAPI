@@ -61,27 +61,73 @@ namespace MyWebAPI.Controllers
 
         //localhost/product
         [HttpPost]
-        public ActionResult<string> AddProduct([FromForm] CreateProductDTO productDTO) //{ form data }
+        public IActionResult AddProduct([FromForm] CreateProductDTO productDTO) //{ form data }
         {
-            var newProduct = new Product();
+            Product product = productDTO.Adapt<Product>();
 
-            productDTO.Adapt(newProduct);
+            IFormFile? file = productDTO.UploadFile;
+            product.ThumbNailPhoto = ConvertFileToByte(file);
 
-            return newProduct.Name;
+            dekDueShopContext.Products.Add(product);
+            dekDueShopContext.SaveChanges();
+
+            var newProduct = product.Adapt<ProductResponseDTO>();
+            return Created($"Product/{product.ProductId}", newProduct);
         }
 
-        //localhost/product
-        [HttpPut]
-        public ActionResult<string> EditProduct(EditProductDTO productDTO)
+        //localhost/product/{id}
+        [HttpPut("{id}")]
+        public IActionResult EditProduct(int id, [FromForm] EditProductDTO productDTO)
         {
-            return "put";
+            if(id != productDTO.ProductId)
+            {
+                return BadRequest();
+            }
+
+            Product? result = dekDueShopContext.Products.Find(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            productDTO.Adapt(result);
+
+            IFormFile? file = productDTO.UploadFile;
+            if(file != null)
+            {
+                result.ThumbNailPhoto = ConvertFileToByte(file);
+            }
+
+            dekDueShopContext.SaveChanges();
+            return NoContent();
         }
 
-        //localhost/product
-        [HttpDelete]
-        public ActionResult<string> DeleteProduct()
+        //localhost/product/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
         {
-            return "delete";
+            Product? result = await dekDueShopContext.Products.FindAsync(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            dekDueShopContext.Products.Remove(result);
+            await dekDueShopContext.SaveChangesAsync();
+
+            return NoContent(); 
+        }
+
+        public static byte[]? ConvertFileToByte(IFormFile? file)
+        {
+            if (file != null && file.Length > 0)
+            {
+                var memoryStream = new MemoryStream();
+                file.CopyTo(memoryStream);
+                var fileBytes = memoryStream.ToArray();
+                return fileBytes;
+            }
+            return null;
         }
     }
 }
