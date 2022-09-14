@@ -3,7 +3,9 @@
 using Mapster;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MyWebAPI.Entities;
+using MyWebAPI.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -24,20 +26,30 @@ namespace MyWebAPI.Controllers
         //localhost/product
         [HttpGet]
         //[DisableCors]
-        public ActionResult<IEnumerable<ProductDTO>> GetProducts() => dekDueShopContext.Products
-                                .ProjectToType<ProductDTO>().ToList();
-
+        public IEnumerable<ProductResponseDTO> GetProducts()
+        {
+            // select * From Product P
+            // left join ProductCategory PC
+            // on P.ProductCategoryID = PC.ProductCategory
+            return dekDueShopContext.Products
+                        .Include(product => product.ProductCategory)
+                        .ProjectToType<ProductResponseDTO>()
+                        .ToList();
+        }
 
         //localhost/product/1234 => validation
         //localhost/product
         [HttpGet("{id}")]
-        public ActionResult<string> GetProductByID(int id)
+        public ActionResult<ProductResponseDTO> GetProductByID(int id)
         {
-            if (id == 0)
+            // select * from product where id = id
+            Product? result = dekDueShopContext.Products.Find(id);
+            if(result == null)
             {
                 return NotFound();
             }
-            return $"id {id}";
+
+            return result.Adapt<ProductResponseDTO>();
         }
 
         //localhost/product/search?name=123
@@ -60,7 +72,7 @@ namespace MyWebAPI.Controllers
 
         //localhost/product
         [HttpPut]
-        public ActionResult<string> EditProduct(ProductDTO productDTO)
+        public ActionResult<string> EditProduct(EditProductDTO productDTO)
         {
             return "put";
         }
@@ -72,29 +84,4 @@ namespace MyWebAPI.Controllers
             return "delete";
         }
     }
-}
-
-public class ProductDTO : CreateProductDTO
-{
-    public int ProductId { get; set; }
-}
-
-public class CreateProductDTO
-{
-    [Required, MaxLength(100)]
-    [MinLength(3, ErrorMessage = "Product name must be more than 3 characters.")]
-    public string Name { get; set; } = null!;
-    [Required, MaxLength(25)]
-    public string ProductNumber { get; set; } = null!;
-    [MaxLength(15)]
-    public string? Color { get; set; }
-    [Range(0, 100_000)]
-    public decimal Price { get; set; }
-    [MaxLength(5)]
-    public string? Size { get; set; }
-    [Range(1, int.MaxValue, ErrorMessage = "Value should be greater than or equal to 1")]
-    public decimal? Weight { get; set; }
-    public IFormFile? ThumbNailPhoto { get; set; }
-    [MaxLength(50)]
-    public string? ThumbnailPhotoFileName { get; set; }
 }
