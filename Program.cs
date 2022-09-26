@@ -1,5 +1,10 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
+using MyWebAPI.Constants;
 using MyWebAPI.Entities;
+using MyWebAPI.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +17,62 @@ var config = builder.Configuration;
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+
+{
+
+    // Begin Basic Authentication
+
+    c.AddSecurityDefinition(SecurityConfig.BasicNameScheme, new OpenApiSecurityScheme
+
+    {
+
+        Description = "Authenticate using Basic Authentication",
+
+        Type = SecuritySchemeType.Http,
+
+        Name = HeaderNames.Authorization,
+
+        In = ParameterLocation.Header,
+
+        Scheme = "basic"
+
+    });
+
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+
+    {
+
+        {
+
+            new OpenApiSecurityScheme()
+
+            {
+
+                Reference = new OpenApiReference
+
+                {
+
+                    Type = ReferenceType.SecurityScheme,
+
+                    Id = SecurityConfig.BasicNameScheme
+
+                },
+
+                In = ParameterLocation.Header
+
+            },
+
+            Array.Empty<string>()
+
+        }
+
+    });
+
+    // End Basic Authentication
+
+});
 
 builder.Services.AddCors(options =>
 {
@@ -52,6 +112,9 @@ builder.Services.AddDbContext<DekDueShopContext>(opt =>
     opt.UseSqlServer(config.GetConnectionString("ConnectionSQLServer"))
 );
 
+builder.Services.AddAuthentication(SecurityConfig.AuthenticationWithBasicScheme)
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(SecurityConfig.AuthenticationWithBasicScheme, null);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -65,8 +128,10 @@ app.UseHttpsRedirection();
 
 app.UseCors(AllowSpecificOrigins);
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers()
+    .RequireAuthorization();
 
 app.Run();
