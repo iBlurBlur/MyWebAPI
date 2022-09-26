@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
@@ -6,6 +7,7 @@ using MyWebAPI;
 using MyWebAPI.Constants;
 using MyWebAPI.Entities;
 using MyWebAPI.Security;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -162,6 +164,8 @@ builder.Services.AddDbContext<DekDueShopContext>(opt =>
     opt.UseSqlServer(config.GetConnectionString("ConnectionSQLServer"))
 );
 
+builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+
 builder.Services.AddAuthentication(SecurityConfig.AuthenticationWithBasicScheme)
     .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(SecurityConfig.AuthenticationWithBasicScheme, null);
 
@@ -181,7 +185,7 @@ app.UseCors(AllowSpecificOrigins);
 //app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseMiddleware<APIKeyMiddleware>();
+//app.UseMiddleware<APIKeyMiddleware>();
 
 app.MapControllers();
     //.RequireAuthorization();

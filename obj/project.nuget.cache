@@ -1,12 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "9QJD5uyOLq4GdFpGjl8XF0IKDzvaktB8QdXlapwfJOj3wEH83PU/mK5eel7pav+bsXBb6K2iHzMGkneXKEp0fw==",
+  "dgSpecHash": "MreKVOCEoLsY0NHWMI7/FbF5HSZahcfjdVMb6QqXXDBSk4FnkeO0SZgUquIJKT7tEQxRGdpfpHxZ/8uvXWNDCA==",
   "success": true,
   "projectFilePath": "C:\\Users\\2521112595\\Downloads\\MyWebAPI\\MyWebAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\2521112595\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\2521112595\\.nuget\\packages\\mapster\\7.3.0\\mapster.7.3.0.nupkg.sha512",
     "C:\\Users\\2521112595\\.nuget\\packages\\mapster.core\\1.2.0\\mapster.core.1.2.0.nupkg.sha512",
+    "C:\\Users\\2521112595\\.nuget\\packages\\mediatr\\10.0.1\\mediatr.10.0.1.nupkg.sha512",
+    "C:\\Users\\2521112595\\.nuget\\packages\\mediatr.contracts\\1.0.1\\mediatr.contracts.1.0.1.nupkg.sha512",
+    "C:\\Users\\2521112595\\.nuget\\packages\\mediatr.extensions.microsoft.dependencyinjection\\10.0.1\\mediatr.extensions.microsoft.dependencyinjection.10.0.1.nupkg.sha512",
     "C:\\Users\\2521112595\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
     "C:\\Users\\2521112595\\.nuget\\packages\\microsoft.data.sqlclient\\2.1.4\\microsoft.data.sqlclient.2.1.4.nupkg.sha512",
     "C:\\Users\\2521112595\\.nuget\\packages\\microsoft.data.sqlclient.sni.runtime\\2.1.1\\microsoft.data.sqlclient.sni.runtime.2.1.1.nupkg.sha512",

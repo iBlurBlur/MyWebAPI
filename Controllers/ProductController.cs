@@ -1,11 +1,13 @@
 ﻿
 
 using Mapster;
+using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyWebAPI.Entities;
 using MyWebAPI.Models;
+using MyWebAPI.UseCases.ProductUseCase.Queries;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -18,23 +20,24 @@ namespace MyWebAPI.Controllers
     {
         private readonly DekDueShopContext dekDueShopContext;
 
-        public ProductController(DekDueShopContext dekDueShopContext)
+        public IMediator Mediator { get; }
+
+        public ProductController(DekDueShopContext dekDueShopContext, IMediator Mediator)
         {
             this.dekDueShopContext = dekDueShopContext;
+            this.Mediator = Mediator;
         }
+
 
         //localhost/product
         [HttpGet]
         //[DisableCors]
         public async Task<IEnumerable<ProductResponseDTO>>  GetProducts()
         {
-            // select * From Product P
-            // left join ProductCategory PC
-            // on P.ProductCategoryID = PC.ProductCategory
-            return await dekDueShopContext.Products
-                        .Include(product => product.ProductCategory)
-                        .ProjectToType<ProductResponseDTO>()
-                        .ToListAsync();
+            var query = new GetProductsQuery();
+            var response = await Mediator.Send(query);
+            IEnumerable<ProductResponseDTO> result = response.Adapt<IEnumerable<ProductResponseDTO>>();
+            return result;
         }
 
         //localhost/product/1234 => validation
@@ -50,7 +53,7 @@ namespace MyWebAPI.Controllers
             }
 
             return result.Adapt<ProductResponseDTO>();
-        }
+        } 
 
         //localhost/product/search?name=123
         [HttpGet("search")]
