@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
+using MyWebAPI;
 using MyWebAPI.Constants;
 using MyWebAPI.Entities;
 using MyWebAPI.Security;
@@ -20,6 +21,55 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 
 {
+    // Begin API Key
+
+    c.AddSecurityDefinition(SecurityConfig.APIKeyNameScheme, new OpenApiSecurityScheme
+
+    {
+
+        Description = "Authenticate using API key",
+
+        Type = SecuritySchemeType.ApiKey,
+
+        Name = SecurityConfig.APIKeyHeader,
+
+        In = ParameterLocation.Header,
+
+    });
+
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+
+    {
+
+        {
+
+            new OpenApiSecurityScheme()
+
+            {
+
+                Reference = new OpenApiReference
+
+                {
+
+                    Type = ReferenceType.SecurityScheme,
+
+                    Id = SecurityConfig.APIKeyNameScheme
+
+                },
+
+                In = ParameterLocation.Header
+
+            },
+
+            Array.Empty<string>()
+
+        }
+
+    });
+
+    // End API Key
+
 
     // Begin Basic Authentication
 
@@ -128,10 +178,12 @@ app.UseHttpsRedirection();
 
 app.UseCors(AllowSpecificOrigins);
 
-app.UseAuthentication();
+//app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers()
-    .RequireAuthorization();
+app.UseMiddleware<APIKeyMiddleware>();
+
+app.MapControllers();
+    //.RequireAuthorization();
 
 app.Run();
